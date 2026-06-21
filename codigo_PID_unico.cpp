@@ -5,7 +5,6 @@
 
 const int PIN_M1 = 9;
 const int PIN_M2 = 10;
-//REGISTRADORES E ESCALAS MPU6050
 const uint8_t MPU_ADDR         = 0x68;  
 const uint8_t REG_WHO_AM_I     = 0x75;
 const uint8_t REG_PWR_MGMT_1   = 0x6B;
@@ -53,12 +52,10 @@ const float R_MEASURE_MAX  = 5.0f;
 //SETPOINT COM RAMPA 
 float RAMP_DEGS  = 15.0f; 
 float setpoint_target  = -30.0f;
-
-//SETPOINT WEIGHTING NO TERMO P
-float       SP_WEIGHT_B = 1.0f; 
+float SP_WEIGHT_B = 1.0f; 
 const float SP_LPF_HZ   = 0.5f; 
 
-//VARIÁVEIS GLOBAIS
+//VARIÁVEIS
 Servo    m1, m2;
 int16_t  accX, accY, accZ, gyroX;
 float    gyroX_cal = 0.0f;
@@ -546,7 +543,6 @@ void processarComando(char* cmd) {
             Serial.print(F("Alvo=")); Serial.print(setpoint_target, 1);
             Serial.print(F("Liga=")); Serial.println(sistema_ligado ? F("SIM") : F("NAO"));
             break;
-
         default:
             Serial.println(F("ERR: Use A/N/P/I/D/F/G/E/B/V/L/S/T<val>/?"));
             break;
