@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include <avr/wdt.h>
-// --- REGISTRADORES E ESCALAS DO MPU6050
 const uint8_t MPU_ADDR         = 0x68; 
 const uint8_t REG_WHO_AM_I     = 0x75;
 const uint8_t REG_PWR_MGMT_1   = 0x6B;
@@ -18,7 +17,7 @@ const float ACC_GATE_TOL   = 0.10f;
 const float ACC_GATE_GAIN  = 8.0f;
 const float R_MEASURE_MAX  = 5.0f;
 
-//VARIAVEIS GLOBAIS
+//VARIAVEIS
 int16_t  accX, accY, accZ, gyroX;
 float    gyroX_cal = 0.0f;
 uint32_t timer_loop;
