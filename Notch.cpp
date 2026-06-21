@@ -178,16 +178,15 @@ bool inicializarMPU6050(uint8_t dlpf) {
     Wire.write(REG_WHO_AM_I);
     Wire.endTransmission(false);
     Wire.requestFrom(MPU_ADDR, (uint8_t)1, (uint8_t)true);
-    if (Wire.available() < 1 || Wire.read() != 0x68) return false;  // WHO_AM_I = 0x68
-
+    if (Wire.available() < 1 || Wire.read() != 0x68) return false;  
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(REG_PWR_MGMT_1);
-    Wire.write(0x00);                 // sai do modo de repouso
+    Wire.write(0x00);                
     if (Wire.endTransmission(true) != 0) return false;
 
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(REG_CONFIG);
-    Wire.write(dlpf);                 // DLPF_CFG (banda do sensor)
+    Wire.write(dlpf);                
     if (Wire.endTransmission(true) != 0) return false;
 
     return true;
@@ -206,7 +205,6 @@ bool lerSensor() {
         int16_t az = Wire.read() << 8 | Wire.read();
         Wire.read(); Wire.read();              
         int16_t gx = Wire.read() << 8 | Wire.read();
-
         accX = ax; accY = ay; accZ = az; gyroX_raw_lsb = gx;
         return true;
     }
@@ -248,7 +246,6 @@ void resetarI2C() {
         digitalWrite(SCL, LOW);  delayMicroseconds(5);
         digitalWrite(SCL, HIGH); delayMicroseconds(5);
     }
-
     digitalWrite(SDA, LOW);  delayMicroseconds(5);
     digitalWrite(SCL, HIGH); delayMicroseconds(5);
     digitalWrite(SDA, HIGH); delayMicroseconds(5);
