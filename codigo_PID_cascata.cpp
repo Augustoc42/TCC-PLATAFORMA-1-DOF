@@ -8,11 +8,11 @@ const int PIN_M2 = 10;
 const uint8_t MPU_ADDR         = 0x68;
 const uint8_t REG_WHO_AM_I     = 0x75;
 const uint8_t REG_PWR_MGMT_1   = 0x6B;
-const uint8_t REG_CONFIG       = 0x1A;  // DLPF
+const uint8_t REG_CONFIG       = 0x1A;  
 const uint8_t REG_ACCEL_XOUT_H = 0x3B;
 const uint8_t REG_GYRO_XOUT_H  = 0x43;
-const float   GYRO_LSB_PER_DPS = 131.0f;    // FS_SEL=0 -> +/-250 graus/s
-const float   ACC_LSB_PER_G    = 16384.0f;  // AFS_SEL=0 -> +/-2 g
+const float   GYRO_LSB_PER_DPS = 131.0f;   
+const float   ACC_LSB_PER_G    = 16384.0f; 
 uint8_t MPU_DLPF = 3;
 const uint32_t LOOP_US = 4000UL;
 
@@ -178,7 +178,7 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
 
     float angulo_real = calcularKalman(accAngle, gyroRate, dt);
 
-    // PT2 (50 Hz) sobre a taxa BRUTA
+    // PT2 (50 Hz) sobre a taxa
     float gyroRate_D1 = pt2a.update(gyroRate, dt, PT2_DTERM_HZ);
     float gyroRate_D  = pt2b.update(gyroRate_D1, dt, PT2_DTERM_HZ); 
 
