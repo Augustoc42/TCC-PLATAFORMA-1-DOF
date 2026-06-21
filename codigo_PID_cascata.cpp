@@ -3,11 +3,8 @@
 #include <Arduino.h>
 #include <avr/wdt.h>
 
-//HARDWARE 
 const int PIN_M1 = 9;
 const int PIN_M2 = 10;
-
-//REGISTRADORES E ESCALAS DO MPU6050
 const uint8_t MPU_ADDR         = 0x68;
 const uint8_t REG_WHO_AM_I     = 0x75;
 const uint8_t REG_PWR_MGMT_1   = 0x6B;
@@ -16,8 +13,6 @@ const uint8_t REG_ACCEL_XOUT_H = 0x3B;
 const uint8_t REG_GYRO_XOUT_H  = 0x43;
 const float   GYRO_LSB_PER_DPS = 131.0f;    // FS_SEL=0 -> +/-250 graus/s
 const float   ACC_LSB_PER_G    = 16384.0f;  // AFS_SEL=0 -> +/-2 g
-
-// DLPF do MPU6050
 uint8_t MPU_DLPF = 3;
 const uint32_t LOOP_US = 4000UL;
 
@@ -25,12 +20,12 @@ const uint32_t LOOP_US = 4000UL;
 const uint8_t OUTER_DIV = 5;
 
 //VELOCIDADE BASE DOS MOTORES
-int VEL_BASE = 1260;     // (TCC cita 1350; usar o MESMO valor nos dois controladores)
+int VEL_BASE = 1260;   
 const int VEL_MIN = 1100;
 const int VEL_MAX = 1700;
 
 // CONTROLADOR EM CASCATA
-// Malha EXTERNA
+// MALHA EXTERNA
 float Kp_ang   = 2.00f;    
 float Ki_ang   = 0.171f;    
 float soma_ang = 0.0f;
@@ -39,31 +34,32 @@ float MAX_RATE_SP = 120.0f; /
 const float I_LIMIT_ANG = 700.0f;   
 const float I_DECAY_ANG = 0.9975f;
 
-// Malha INTERNA
+// MALHA INTERNA
 float Kp_rate   = 0.70f;    
 float Ki_rate   = 0.0f;
 float Kd_rate   = 0.0f;  
 float soma_rate = 0.0f;
 
 const float I_LIMIT_RATE = 300.0f;
-const float FREEZE_RATE  = 0.5f;    // nao integra ruido de taxa perto de zero
+const float FREEZE_RATE  = 0.5f;    
 
-//Anti-windup zonas mortas e os limites
+//ANTI-WINDUP
 const float I_LIMIT  = I_LIMIT_ANG;
 const float D_LIMIT  = 150.0f;
 const float KAW_BACK = 0.2f;
 const float ZONA_I_DEG = 2.0f;
 const float FREEZE_ANG = 0.3f;
 // anti-windup por banda no integrador EXTERNO
+//ZONA MORTA
 const float I_BAND_DEG = 12.0f;     
-float DEAD_ANG  = 0.4f;   // zona morta do P EXTERNO (comando H, graus)
-float DEAD_RATE = 1.0f;   // zona morta do P INTERNO (comando E, graus/s)
+float DEAD_ANG  = 0.4f;   
+float DEAD_RATE = 1.0f; 
 
 float STICTION_KICK              = 15.0f;
 const float STICTION_GYRO_THRESH = 15.0f;
 const float STICTION_ERR_THRESH  = 3.0f; 
 float pid_out = 0.0f;
-//balanceamento 
+//BALANCEAMENTO 
 int   balanceamento = -24;
 bool  sistema_ligado = false;
 
@@ -173,7 +169,7 @@ void loop() {
 float gyroRate    = ((float)gyroX - gyroX_cal) / GYRO_LSB_PER_DPS;
 float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ * accZ)) * 180.0f / PI;
 
-    // gating do acelerometro: infla R_measure fora de 1 g (igual ao PID unico)
+    // gating do acelerometro inflando R_measure fora de 1 g
     float acc_mag    = sqrtf((float)accX * accX + (float)accY * accY + (float)accZ * accZ);
     float acc_desvio = fabsf(acc_mag - ACC_LSB_PER_G) / ACC_LSB_PER_G;
     float r_extra    = acc_desvio - ACC_GATE_TOL;
@@ -184,7 +180,7 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
 
     // PT2 (50 Hz) sobre a taxa BRUTA
     float gyroRate_D1 = pt2a.update(gyroRate, dt, PT2_DTERM_HZ);
-    float gyroRate_D  = pt2b.update(gyroRate_D1, dt, PT2_DTERM_HZ);   // = omega filtrado
+    float gyroRate_D  = pt2b.update(gyroRate_D1, dt, PT2_DTERM_HZ); 
 
     // rampa do setpoint
     if (sistema_ligado) {
@@ -199,7 +195,8 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
     int  cmd_pwm1 = 1000, cmd_pwm2 = 1000;
 
     if (sistema_ligado) {
-        float erro_ang = setpoint_ativo - angulo_real;   // calculado todo ciclo (failsafe/kick/externo)
+        // calculado todo ciclo
+        float erro_ang = setpoint_ativo - angulo_real;   
         // FAILSAFE DE INCLINACAO
         static uint16_t fall_count = 0;
         if (fabsf(erro_ang) > LIMITE_QUEDA) {
@@ -227,7 +224,7 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
             float dt_o   = dt_outer_acc;   
             dt_outer_acc = 0.0f;
 
-            // integrador externo: integracao condicional
+            // integrador externo integracao condicional
             float abs_e = fabsf(erro_ang);
             if (!gyro_saturado) {
                 if (abs_e > I_BAND_DEG) {
@@ -249,13 +246,11 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
             }
         }
 
-        // MALHA INTERNA (taxa -> PWM), 250 Hz
-
+        // MALHA INTERNA A 250 Hz
         float erro_rate = rate_setpoint - gyroRate_D;
         if (!gyro_saturado && fabsf(erro_rate) >= FREEZE_RATE) {
             soma_rate = constrain(soma_rate + erro_rate * dt, -I_LIMIT_RATE, I_LIMIT_RATE);
         }
-
         float P_r = (fabsf(erro_rate) > DEAD_RATE) ? Kp_rate * erro_rate : 0.0f;
         float I_r = Ki_rate * soma_rate;
         float gyroAccel = (gyroRate_D - prev_gyroRate_D) / dt;
@@ -292,25 +287,22 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
     }
 
     lerSerial();
-
-    // telemetria nao bloqueante (20 Hz). Campos compativeis com os scripts +
-    // RSP (setpoint de taxa), Ia (integ. externo), Ir (integ. interno).
     if ((millis() - timer_print) > 50 && Serial.availableForWrite() >= 60) {
         float err_display = setpoint_ativo - angulo_real;
-        Serial.print(F("T:"));    Serial.print(millis());
-        Serial.print(F(" M1:"));  Serial.print(cmd_pwm1);
-        Serial.print(F(" M2:"));  Serial.print(cmd_pwm2);
-        Serial.print(F(" SP:"));  Serial.print(setpoint_ativo, 1);
+        Serial.print(F("T:")); Serial.print(millis());
+        Serial.print(F(" M1:")); Serial.print(cmd_pwm1);
+        Serial.print(F(" M2:")); Serial.print(cmd_pwm2);
+        Serial.print(F(" SP:")); Serial.print(setpoint_ativo, 1);
         Serial.print(F(" Ang:")); Serial.print(angulo_real, 2);
         Serial.print(F(" AccA:"));Serial.print(accAngle, 2);
         Serial.print(F(" Err:")); Serial.print(err_display, 2);
         Serial.print(F(" RSP:")); Serial.print(rate_setpoint, 1);
-        Serial.print(F(" GR:"));  Serial.print(gyroRate, 1);
-        Serial.print(F(" Ia:"));  Serial.print(soma_ang, 1);
-        Serial.print(F(" Ir:"));  Serial.print(soma_rate, 1);
+        Serial.print(F(" GR:")); Serial.print(gyroRate, 1);
+        Serial.print(F(" Ia:")); Serial.print(soma_ang, 1);
+        Serial.print(F(" Ir:")); Serial.print(soma_rate, 1);
         if (saturado) {
             if (fabsf(gyroRate) >= GYRO_SAT_DEG_S) Serial.print(F(" [GSAT]"));
-            else                                     Serial.print(F(" [SAT]"));
+            else Serial.print(F(" [SAT]"));
         }
         Serial.println();
         timer_print = millis();
