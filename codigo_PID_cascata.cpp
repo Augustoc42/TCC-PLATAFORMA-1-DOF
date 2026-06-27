@@ -16,11 +16,11 @@ const float   ACC_LSB_PER_G    = 16384.0f;
 uint8_t MPU_DLPF = 3;
 const uint32_t LOOP_US = 4000UL;
 
-//DIVISOR DA MALHA EXTERNA 50 Hz e 250
+//DIVISOR DA MALHA EXTERNA 50 e 250
 const uint8_t OUTER_DIV = 5;
 
 //VELOCIDADE BASE DOS MOTORES
-int VEL_BASE = 1260;   
+int VEL_BASE = 1350;   
 const int VEL_MIN = 1100;
 const int VEL_MAX = 1700;
 
@@ -177,8 +177,6 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
                          ? R_MEASURE_BASE : constrain(R_MEASURE_BASE * (1.0f + ACC_GATE_GAIN * r_extra), R_MEASURE_BASE, R_MEASURE_MAX);
 
     float angulo_real = calcularKalman(accAngle, gyroRate, dt);
-
-    // PT2 (50 Hz) sobre a taxa
     float gyroRate_D1 = pt2a.update(gyroRate, dt, PT2_DTERM_HZ);
     float gyroRate_D  = pt2b.update(gyroRate_D1, dt, PT2_DTERM_HZ); 
 
@@ -530,18 +528,13 @@ void resetarI2C() {
             break;
 
         case '?':
-            Serial.println(F("=== PID CASCATA ==="));
-            Serial.print(F(" [EXT] Kp_ang=")); Serial.print(Kp_ang);
+            Serial.println(F("PID CASCATA"));
+            Serial.print(F(" Kp_ang=")); Serial.print(Kp_ang);
             Serial.print(F(" Ki_ang=")); Serial.print(Ki_ang);
             Serial.print(F(" MAX_RATE_SP=")); Serial.print(MAX_RATE_SP, 0); Serial.println(F(" dps"));
-            Serial.print(F(" [INT] Kp_rate=")); Serial.print(Kp_rate);
+            Serial.print(F(" Kp_rate=")); Serial.print(Kp_rate);
             Serial.print(F(" Ki_rate=")); Serial.print(Ki_rate);
             Serial.print(F(" Kd_rate=")); Serial.println(Kd_rate);
-            Serial.print(F(" PT2(D)=")); Serial.print(PT2_DTERM_HZ, 1);
-            Serial.print(F("Hz DeadAng=")); Serial.print(DEAD_ANG);
-            Serial.print(F("deg DeadRate=")); Serial.print(DEAD_RATE); Serial.println(F("dps"));
-            Serial.print(F(" Kick=")); Serial.print(STICTION_KICK);
-            Serial.print(F(" Failsafe=")); Serial.print(LIMITE_QUEDA, 0);
             Serial.print(F(" Rampa=")); Serial.print(RAMP_DEGS, 1); Serial.println(F("deg/s"));
             Serial.print(F(" B=")); Serial.print(balanceamento);
             Serial.print(F(" V=")); Serial.print(VEL_BASE);
