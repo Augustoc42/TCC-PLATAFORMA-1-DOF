@@ -99,7 +99,7 @@ struct PT1Filter {
 };
 
 // Corte do PT2
-float PT2_DTERM_HZ = 50.0f;
+float PT2_DTERM_HZ = 20.0f;
 PT1Filter   pt2a, pt2b;
 float       prev_gyroRate_D = 0.0f; 
 
