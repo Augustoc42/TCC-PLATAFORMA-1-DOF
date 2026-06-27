@@ -75,7 +75,7 @@ struct PT1Filter {
     void reset(float v = 0.0f) { state = v; }
 };
 
-float PT2_DTERM_HZ = 50.0f;
+float PT2_DTERM_HZ = 20.0f;
 PT1Filter   pt2a, pt2b;
 PT1Filter   sp_lpf;        
 
