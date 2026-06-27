@@ -16,7 +16,7 @@ const float   ACC_LSB_PER_G    = 16384.0f;
 const uint32_t LOOP_US = 4000UL;
 
 // VELOCIDADE BASE DOS MOTORES
-int VEL_BASE = 1260;
+int VEL_BASE = 1350;
 const int VEL_MIN = 1100;
 const int VEL_MAX = 1700;
 
@@ -534,10 +534,6 @@ void processarComando(char* cmd) {
             Serial.print(F("Kp_rate=")); Serial.print(Kp_rate);
             Serial.print(F("Ki_rate="));Serial.print(Ki_rate);
             Serial.print(F("Kd_rate="));Serial.println(Kd_rate);
-            Serial.print(F(">> [Flt] Notch="));Serial.print(NOTCH_HZ);
-            Serial.print(F("Q="));Serial.print(NOTCH_Q);
-            Serial.print(F("PT2="));Serial.print(PT2_DTERM_HZ);
-            Serial.print(F("DeadRate="));Serial.print(DEAD_RATE);
             Serial.print(F("B="));Serial.print(balanceamento);
             Serial.print(F("V="));Serial.print(VEL_BASE);
             Serial.print(F("Alvo=")); Serial.print(setpoint_target, 1);
