@@ -40,6 +40,7 @@ float Ki_rate   = 0.0f;
 float Kd_rate   = 0.0f;  
 float soma_rate = 0.0f;
 
+
 const float I_LIMIT_RATE = 300.0f;
 const float FREEZE_RATE  = 0.5f;    
 
@@ -62,7 +63,6 @@ float pid_out = 0.0f;
 //BALANCEAMENTO 
 int   balanceamento = -24;
 bool  sistema_ligado = false;
-
 float LIMITE_QUEDA = 45.0f;
 const uint16_t FALL_TRIP    = 50;
 
