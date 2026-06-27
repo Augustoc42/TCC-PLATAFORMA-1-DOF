@@ -18,12 +18,12 @@ const uint32_t LOOP_US = 4000UL;
 // VELOCIDADE BASE DOS MOTORES
 int VEL_BASE = 1350;
 const int VEL_MIN = 1100;
-const int VEL_MAX = 1700;
+const int VEL_MAX = 1900;
 
 // PID ÚNICO
-float Kp     = 1.65f;  
-float Ki     = 0.122f;
-float Kd     = 0.60f;
+float Kp     = 1.40f;  
+float Ki     = 0.12f;
+float Kd     = 0.70f;
 float soma_e = 0.0f;
 
 const float I_LIMIT  = 700.0f;
@@ -39,7 +39,7 @@ float STICTION_KICK = 15.0f;
 const float STICTION_GYRO_THRESH = 15.0f;
 const float STICTION_ERR_THRESH  = 3.0f;
 float pid_out      = 0.0f;
-int   balanceamento = -20;
+int   balanceamento = -24;
 bool  sistema_ligado = false;
 float Kff = 0.0f;
 float LIMITE_QUEDA = 45.0f;   
@@ -61,7 +61,7 @@ int16_t  accX, accY, accZ, gyroX;
 float    gyroX_cal = 0.0f;
 uint32_t timer_loop;
 uint32_t timer_print;
-uint8_t  MPU_DLPF = 0;
+uint8_t  MPU_DLPF = 3;
 
 // FILTRO PT1
 struct PT1Filter {
