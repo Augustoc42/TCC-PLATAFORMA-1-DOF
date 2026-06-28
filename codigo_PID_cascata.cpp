@@ -531,19 +531,16 @@ void resetarI2C() {
             Serial.println(F("PID CASCATA"));
             Serial.print(F(" Kp_ang=")); Serial.print(Kp_ang);
             Serial.print(F(" Ki_ang=")); Serial.print(Ki_ang);
-            Serial.print(F(" MAX_RATE_SP=")); Serial.print(MAX_RATE_SP, 0); Serial.println(F(" dps"));
             Serial.print(F(" Kp_rate=")); Serial.print(Kp_rate);
             Serial.print(F(" Ki_rate=")); Serial.print(Ki_rate);
             Serial.print(F(" Kd_rate=")); Serial.println(Kd_rate);
-            Serial.print(F(" Rampa=")); Serial.print(RAMP_DEGS, 1); Serial.println(F("deg/s"));
             Serial.print(F(" B=")); Serial.print(balanceamento);
             Serial.print(F(" V=")); Serial.print(VEL_BASE);
-            Serial.print(F(" DLPF=")); Serial.print(MPU_DLPF);
             Serial.print(F(" Alvo=")); Serial.print(setpoint_target, 1);
             Serial.print(F(" Liga=")); Serial.println(sistema_ligado ? F("SIM") : F("NAO"));
             break;
         default:
-            Serial.println(F("ERR: A/N/Q/P/I/D/E/H/F/K/B/V/C/R/Z/U/M/W/L/S/T<val>/?"));
+            Serial.println(F("ERR: A/N/Q/P/I/D/E/H/F/K/B/V/C/R/Z/U/M/L/S/T<val>/?"));
             break;
     }
 }
