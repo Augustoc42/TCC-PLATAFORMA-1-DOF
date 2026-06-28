@@ -145,19 +145,18 @@ void setup() {
 
     wdt_reset();
     timer_loop = micros();
-    Serial.println(F("SISTEMA PRONTO - PID UNICO."));
+    Serial.println(F("PID UNICO"));
     Serial.print(F("Alvo: "));
     Serial.print(setpoint_target);
     Serial.print(F(" deg  |  Atual: "));
     Serial.print(kX.angle, 1);
-    Serial.println(F(" deg"));
-    Serial.println(F("      L=liga/desliga  S=captura alvo  T<val>=alvo numerico"));
-    Serial.println(F("      P<val>=Kp  I<val>=Ki  D<val>=Kd"));
-    Serial.println(F("      E<val>=deadband_D  H<val>=deadband_P"));
-    Serial.println(F("      K<val>=stiction_kick  B<val>=balance  V<val>=vel_base  ?=status"));
-    Serial.println(F("      A<val>=feedforward  C<val>=failsafe_deg"));
-    Serial.println(F("      F<Hz>=corte_filtro_D  R<deg/s>=rampa  J<0..1>=peso_setpoint_P"));
-    Serial.println(F("      Z<PWM>=dither_amp  U<div>=dither_freq  M<0..6>=MPU_DLPF"));
+    Serial.println(F("deg"));
+    Serial.println(F("L=liga/desliga  S=captura alvo  T<val>=alvo numerico"));
+    Serial.println(F("P<val>=Kp  I<val>=Ki  D<val>=Kd"));
+    Serial.println(F("E<val>=deadband_D  H<val>=deadband_P"));
+    Serial.println(F("K<val>=stiction_kick  B<val>=balance  V<val>=vel_base  ?=status"));
+    Serial.println(F("A<val>=feedforward  C<val>=failsafe_deg"));
+    Serial.println(F("F<Hz>=corte_filtro_D  R<deg/s>=rampa  J<0..1>=peso_setpoint_P"));
 }
 
 void loop() {
@@ -540,7 +539,7 @@ void processarComando(char* cmd) {
             Serial.print(F("Liga=")); Serial.println(sistema_ligado ? F("SIM") : F("NAO"));
             break;
         default:
-            Serial.println(F("ERR: Use A/N/P/I/D/F/G/E/B/V/L/S/T<val>/?"));
+            Serial.println(F("A/N/P/I/D/F/G/E/B/V/L/S/T<val>/?"));
             break;
     }
 }
