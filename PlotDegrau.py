@@ -21,8 +21,8 @@ def main():
     for k, (label, csv) in enumerate(itens):
         t, sp, ang = acomodaca(carregar(csv))
         if sp_ref is None:
-            ax.plot(t, sp, "--", color="0.4", lw=1.8, label="Setpoint", zorder=1)
-            sp_ref = True
+         ax.plot(t, sp, "--", color="0.4", lw=1.8, label="Setpoint", zorder=1)
+         sp_ref = True
         ax.plot(t, ang, "-", color=cores[k % len(cores)], lw=1.4, label=label, zorder=2)
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Angulo (graus)")
