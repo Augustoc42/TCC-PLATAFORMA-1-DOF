@@ -14,18 +14,15 @@ const uint8_t REG_GYRO_XOUT_H  = 0x43;
 const float   GYRO_LSB_PER_DPS = 131.0f;    
 const float   ACC_LSB_PER_G    = 16384.0f;  
 const uint32_t LOOP_US = 4000UL;
-
 // VELOCIDADE BASE DOS MOTORES
 int VEL_BASE = 1350;
 const int VEL_MIN = 1100;
 const int VEL_MAX = 1900;
-
 // PID ÚNICO
 float Kp     = 1.40f;  
 float Ki     = 0.12f;
 float Kd     = 0.70f;
 float soma_e = 0.0f;
-
 const float I_LIMIT  = 700.0f;
 const float I_DECAY  = 0.9995f;
 const float D_LIMIT  = 150.0f;
@@ -48,13 +45,11 @@ const float R_MEASURE_BASE = 0.05f;
 const float ACC_GATE_TOL   = 0.10f;   
 const float ACC_GATE_GAIN  = 8.0f;    
 const float R_MEASURE_MAX  = 5.0f;   
-
 //SETPOINT COM RAMPA 
 float RAMP_DEGS  = 15.0f; 
 float setpoint_target  = -30.0f;
 float SP_WEIGHT_B = 1.0f; 
 const float SP_LPF_HZ   = 0.5f; 
-
 //VARIÁVEIS
 Servo    m1, m2;
 int16_t  accX, accY, accZ, gyroX;
@@ -62,7 +57,6 @@ float    gyroX_cal = 0.0f;
 uint32_t timer_loop;
 uint32_t timer_print;
 uint8_t  MPU_DLPF = 3;
-
 // FILTRO PT1
 struct PT1Filter {
     float state = 0.0f;
@@ -74,11 +68,9 @@ struct PT1Filter {
     }
     void reset(float v = 0.0f) { state = v; }
 };
-
 float PT2_DTERM_HZ = 20.0f;
 PT1Filter   pt2a, pt2b;
 PT1Filter   sp_lpf;        
-
 // FILTRO DE KALMAN
 struct Kalman {
     float Q_angle = 0.001f;
@@ -89,19 +81,15 @@ struct Kalman {
     float P[2][2] = {{10.0f, 0.0f}, {0.0f, 0.1f}};
 };
 Kalman kX;
-
 const uint8_t I2C_MAX_FALHAS = 10;
-
 void setup() {
     wdt_enable(WDTO_2S);
-
     Serial.begin(250000);
     Wire.begin();
     Wire.setClock(400000);
     m1.attach(PIN_M1);
     m2.attach(PIN_M2);
     pararMotores();
-
     if (!inicializarMPU6050()) {
         Serial.println(F("ERRO MPU6050"));
         pinMode(LED_BUILTIN, OUTPUT);
@@ -187,8 +175,7 @@ void loop() {
     }
 
     float gyroRate    = ((float)gyroX - gyroX_cal) / GYRO_LSB_PER_DPS;
-    float accAngle    = atan2f((float)accY,
-                               sqrtf((float)accX * accX + (float)accZ * accZ)) * 180.0f / PI;.
+    float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ * accZ)) * 180.0f / PI;.
     float acc_mag    = sqrtf((float)accX * accX + (float)accY * accY + (float)accZ * accZ);
     float acc_desvio = fabsf(acc_mag - ACC_LSB_PER_G) / ACC_LSB_PER_G;
     float r_extra    = acc_desvio - ACC_GATE_TOL;
@@ -212,10 +199,7 @@ void loop() {
     int  cmd_pwm1 = 1000; 
     int  cmd_pwm2 = 1000;
     if (sistema_ligado) {
-
         float erro = setpoint_ativo - angulo_real;
-
-        //failsafe de inclinacao
         // LIMITE_QUEDA
         static uint16_t fall_count = 0;
         if (fabsf(erro) > LIMITE_QUEDA) {
@@ -233,10 +217,8 @@ void loop() {
         } else {
             fall_count = 0;
         }
-
         bool gyro_saturado = fabsf(gyroRate) >= GYRO_SAT_DEG_S;
         if (gyro_saturado) saturado = true;
-
         float abs_erro_i = fabsf(erro);
         if (!gyro_saturado) {
             if (abs_erro_i > I_BAND_DEG) {
@@ -278,10 +260,8 @@ void loop() {
         if (STICTION_KICK > 0.0f && sistema_ligado && !gyro_saturado) {
             float gyro_factor = 1.0f - fabsf(gyroRate) / STICTION_GYRO_THRESH;
             gyro_factor = constrain(gyro_factor, 0.0f, 1.0f);
-
             float err_factor = (fabsf(erro) - STICTION_ERR_THRESH) / STICTION_ERR_THRESH;
             err_factor = constrain(err_factor, 0.0f, 1.0f);
-
             float kick = STICTION_KICK * gyro_factor * err_factor;
             if (kick > 0.0f) {
                 pid_out += (erro > 0.0f) ? kick : -kick;
@@ -290,7 +270,6 @@ void loop() {
         if (fabsf(pid_out) >= PID_LIMIT) saturado = true;
         pid_out = constrain(pid_out, -PID_LIMIT, PID_LIMIT);
     lerSerial();
-
     if ((millis() - timer_print) > 50 && Serial.availableForWrite() >= 60) {
         float err_display = setpoint_ativo - angulo_real;
         Serial.print(F("T:"));    Serial.print(millis());
@@ -310,19 +289,16 @@ void loop() {
         timer_print = millis();
     }
 }
-
 bool inicializarMPU6050() {
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(REG_WHO_AM_I);
     Wire.endTransmission(false);
     Wire.requestFrom(MPU_ADDR, (uint8_t)1, (uint8_t)true);
-  
     if (Wire.available() < 1 || Wire.read() != 0x68) return false; 
        // sai do modo de repouso
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(REG_PWR_MGMT_1);
     Wire.write(0x00);          
-    
   if (Wire.endTransmission(true) != 0) return false;
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(REG_CONFIG);
@@ -359,28 +335,23 @@ float calcularKalman(float newAngle, float newRate, float dt) {
         kX.angle = newAngle;
         inicializado = true;
     }
-
     kX.angle   += dt * (newRate - kX.bias);
     kX.P[0][0] += dt * (dt * kX.P[1][1] - kX.P[0][1] - kX.P[1][0] + kX.Q_angle);
     kX.P[0][1] -= dt * kX.P[1][1];
     kX.P[1][0] -= dt * kX.P[1][1];
     kX.P[1][1] += kX.Q_bias * dt;
-
     float S  = kX.P[0][0] + kX.R_measure;
     float K0 = kX.P[0][0] / S;
     float K1 = kX.P[1][0] / S;
-
     float y   = newAngle - kX.angle;
     kX.angle += K0 * y;
     kX.bias  += K1 * y;
     kX.bias   = constrain(kX.bias, -10.0f, 10.0f);
-
     float P00 = kX.P[0][0], P01 = kX.P[0][1];
     kX.P[0][0] -= K0 * P00;
     kX.P[0][1] -= K0 * P01;
     kX.P[1][0] -= K1 * P00;
     kX.P[1][1] -= K1 * P01;
-
     return kX.angle;
 }
 
@@ -429,38 +400,30 @@ void processarComando(char* cmd) {
     float valor = atof(cmd + 1);
 
     switch (tipo) {
-
-
         case 'P':
             if (valor >= 0.0f && valor <= 20.0f) { Kp_rate = valor; Serial.print(F(">> Kp_rate=")); Serial.println(Kp_rate); }
             else Serial.println(F("ERR: P [0..20]"));
             break;
-
         case 'I':
             if (valor >= 0.0f && valor <= 5.0f) { Ki_rate = valor; soma_rate = 0.0f; Serial.print(F(">> Ki_rate=")); Serial.println(Ki_rate); }
             else Serial.println(F("ERR: I [0..5]"));
             break;
-
         case 'D':
             if (valor >= 0.0f && valor <= 2.0f) { Kd_rate = valor; Serial.print(F(">> Kd_rate=")); Serial.println(Kd_rate); }
             else Serial.println(F("ERR: D [0..2]"));
             break;
-
         case 'E':
             if (valor >= 0.0f && valor <= 10.0f) { DEAD_RATE = valor; Serial.print(F(">> DeadRate=")); Serial.print(DEAD_RATE); Serial.println(F(" dps")); }
             else Serial.println(F("ERR: E [0..10]"));
             break;
-
         case 'B':
             if (valor >= -200.0f && valor <= 200.0f) { balanceamento = (int)valor; Serial.print(F(">> B=")); Serial.println(balanceamento); }
             else Serial.println(F("ERR: B [-200..200]"));
             break;
-
         case 'V':
             if (valor >= (float)VEL_MIN && valor <= (float)VEL_MAX) { VEL_BASE = (int)valor; Serial.print(F(">> V=")); Serial.println(VEL_BASE); }
             else { Serial.print(F("ERR: V [")); Serial.print(VEL_MIN); Serial.print(F("..")); Serial.print(VEL_MAX); Serial.println(F("]")); }
             break;
-
         case 'L':
             sistema_ligado = !sistema_ligado;
             if (sistema_ligado) {
@@ -473,27 +436,24 @@ void processarComando(char* cmd) {
                 notchFilter.reset();
                 prev_gyroRate_D = 0.0f;
                 setpoint_ativo  = kX.angle;
-                Serial.print(F(">> LIGADO | rampa ")); Serial.print(kX.angle, 1);
+                Serial.print(F("LIGADO ")); Serial.print(kX.angle, 1);
                 Serial.print(F(" -> ")); Serial.print(setpoint_target, 1); Serial.println(F(" deg"));
             } else {
                 pararMotores();
-                Serial.println(F(">> DESLIGADO"));
+                Serial.println(F(" DESLIGADO"));
             }
             break;
-
         case 'S':
             setpoint_target = kX.angle;
             setpoint_ativo  = kX.angle;
             Serial.print(F(">> Novo alvo capturado: ")); Serial.print(setpoint_target, 2); Serial.println(F(" deg"));
             break;
-
         case 'T':
             if (valor >= -180.0f && valor <= 180.0f) {
                 setpoint_target = valor;
                 Serial.print(F(">> Alvo=")); Serial.print(setpoint_target, 1); Serial.println(F(" deg"));
             } else Serial.println(F("ERR: T [-180..180]"));
             break;
-
         case '?':
             Serial.print(F("Kp_ang=")); Serial.print(Kp_ang);
             Serial.print(F("Ki_ang="));Serial.println(Ki_ang);
