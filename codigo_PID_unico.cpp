@@ -430,17 +430,7 @@ void processarComando(char* cmd) {
 
     switch (tipo) {
 
-        case 'A':
-            if (valor >= 0.0f && valor <= 50.0f) { Kp_ang = valor; Serial.print(F(">> Kp_ang=")); Serial.println(Kp_ang); }
-            else Serial.println(F("ERR: A [0..50]"));
-            break;
 
-        case 'N':
-            if (valor >= 0.0f && valor <= 5.0f) { Ki_ang = valor; soma_ang = 0.0f; Serial.print(F(">> Ki_ang=")); Serial.println(Ki_ang); }
-            else Serial.println(F("ERR: N [0..5]"));
-            break;
-
-        // Loop interno
         case 'P':
             if (valor >= 0.0f && valor <= 20.0f) { Kp_rate = valor; Serial.print(F(">> Kp_rate=")); Serial.println(Kp_rate); }
             else Serial.println(F("ERR: P [0..20]"));
@@ -456,34 +446,11 @@ void processarComando(char* cmd) {
             else Serial.println(F("ERR: D [0..2]"));
             break;
 
-        //Filtro notch
-        case 'F':
-            //configura notch
-            if (valor >= 0.0f && valor < 125.0f) {
-                NOTCH_HZ = valor;
-                notchFilter.configure(NOTCH_HZ, NOTCH_Q, 250.0f);
-                if (NOTCH_HZ > 0.0f) { Serial.print(F(">> Notch=")); Serial.print(NOTCH_HZ); Serial.print(F(" Hz Q=")); Serial.println(NOTCH_Q); }
-                else                   Serial.println(F(">> Notch desabilitado"));
-            } else Serial.println(F("ERR: F [0..124]"));
-            break;
-
-        case 'G':
-            //Fator de qualidade do notch
-            if (valor >= 0.5f && valor <= 20.0f) {
-                NOTCH_Q = valor;
-                notchFilter.configure(NOTCH_HZ, NOTCH_Q, 250.0f);
-                Serial.print(F(">> Notch Q=")); Serial.print(NOTCH_Q);
-                Serial.print(F(" @ ")); Serial.print(NOTCH_HZ); Serial.println(F(" Hz"));
-            } else Serial.println(F("ERR: G [0.5..20]"));
-            break;
-
-        //Dead zone do P interno
         case 'E':
             if (valor >= 0.0f && valor <= 10.0f) { DEAD_RATE = valor; Serial.print(F(">> DeadRate=")); Serial.print(DEAD_RATE); Serial.println(F(" dps")); }
             else Serial.println(F("ERR: E [0..10]"));
             break;
 
-        //Sistema
         case 'B':
             if (valor >= -200.0f && valor <= 200.0f) { balanceamento = (int)valor; Serial.print(F(">> B=")); Serial.println(balanceamento); }
             else Serial.println(F("ERR: B [-200..200]"));
@@ -497,10 +464,10 @@ void processarComando(char* cmd) {
         case 'L':
             sistema_ligado = !sistema_ligado;
             if (sistema_ligado) {
-                soma_ang        = 0.0f;
-                soma_rate       = 0.0f;
-                pid_out         = 0.0f;
-                rate_setpoint   = 0.0f;
+                soma_ang = 0.0f;
+                soma_rate = 0.0f;
+                pid_out = 0.0f;
+                rate_setpoint = 0.0f;
                 pt2a.reset();
                 pt2b.reset();
                 notchFilter.reset();
@@ -539,7 +506,7 @@ void processarComando(char* cmd) {
             Serial.print(F("Liga=")); Serial.println(sistema_ligado ? F("SIM") : F("NAO"));
             break;
         default:
-            Serial.println(F("A/N/P/I/D/F/G/E/B/V/L/S/T<val>/?"));
+            Serial.println(F("P/I/D/E/B/V/L/S/T<val>/?"));
             break;
     }
 }
