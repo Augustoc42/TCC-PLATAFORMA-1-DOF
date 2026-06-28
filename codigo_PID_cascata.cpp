@@ -22,7 +22,7 @@ const uint8_t OUTER_DIV = 5;
 //VELOCIDADE BASE DOS MOTORES
 int VEL_BASE = 1350;   
 const int VEL_MIN = 1100;
-const int VEL_MAX = 1700;
+const int VEL_MAX = 1900;
 
 // CONTROLADOR EM CASCATA
 // MALHA EXTERNA
@@ -56,7 +56,7 @@ const float I_BAND_DEG = 12.0f;
 float DEAD_ANG  = 0.4f;   
 float DEAD_RATE = 1.0f; 
 
-float STICTION_KICK              = 15.0f;
+float STICTION_KICK = 15.0f;
 const float STICTION_GYRO_THRESH = 15.0f;
 const float STICTION_ERR_THRESH  = 3.0f; 
 float pid_out = 0.0f;
@@ -73,7 +73,7 @@ const float ACC_GATE_GAIN  = 8.0f;
 const float R_MEASURE_MAX  = 5.0f;
 
 //SETPOINT COM RAMPA 
-float RAMP_DEGS  = 40.0f;   
+float RAMP_DEGS  = 15.0f;   
 float setpoint_target  = -30.0f;
 float setpoint_ativo   = -30.0f;
 const float PID_LIMIT      = 350.0f;   /
