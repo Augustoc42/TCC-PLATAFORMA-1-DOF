@@ -408,12 +408,6 @@ void resetarI2C() {
                 Serial.print(F(" Ki_ang=")); Serial.println(Ki_ang);
             } else Serial.println(F("ERR: N [0..5]"));
             break;
-        case 'Q':
-            if (valor >= 30.0f && valor <= 500.0f) {
-                MAX_RATE_SP = valor;
-                Serial.print(F(" MAX_RATE_SP=")); Serial.print(MAX_RATE_SP, 0); Serial.println(F(" dps"));
-            } else Serial.println(F("ERR: Q [30..500] dps"));
-            break;
 
         //MALHA INTERNA
         case 'P':
@@ -432,29 +426,11 @@ void resetarI2C() {
                 Kd_rate = valor; Serial.print(F(" Kd_rate=")); Serial.println(Kd_rate);
             } else Serial.println(F("ERR: D [0..2]"));
             break;
-        case 'E':
-            if (valor >= 0.0f && valor <= 10.0f) {
-                DEAD_RATE = valor;
-                Serial.print(F(" DeadRate(int)=")); Serial.print(DEAD_RATE); Serial.println(F(" dps"));
-            } else Serial.println(F("ERR: E [0..10]"));
-            break;
-        case 'H':
-            if (valor >= 0.0f && valor <= 5.0f) {
-                DEAD_ANG = valor;
-                Serial.print(F(" DeadAng(ext)=")); Serial.print(DEAD_ANG); Serial.println(F(" deg"));
-            } else Serial.println(F("ERR: H [0..5]"));
-            break;
         case 'F':
             if (valor >= 1.0f && valor <= 120.0f) {
                 PT2_DTERM_HZ = valor; pt2a.reset(); pt2b.reset();
                 Serial.print(F(" Corte PT2 (D)=")); Serial.print(PT2_DTERM_HZ, 1); Serial.println(F(" Hz"));
             } else Serial.println(F("ERR: F [1..120] Hz"));
-            break;
-        case 'K':
-            if (valor >= 0.0f && valor <= 80.0f) {
-                STICTION_KICK = valor;
-                Serial.print(F(" StictionKick=")); Serial.print(STICTION_KICK); Serial.println(F(" PWM"));
-            } else Serial.println(F("ERR: K [0..80]"));
             break;
         case 'B':
             if (valor >= -200.0f && valor <= 200.0f) {
@@ -466,31 +442,13 @@ void resetarI2C() {
                 VEL_BASE = (int)valor; Serial.print(F(" V=")); Serial.println(VEL_BASE);
             } else Serial.println(F("ERR: V [1100..1700]"));
             break;
-        case 'C':
-            if (valor >= 10.0f && valor <= 90.0f) {
-                LIMITE_QUEDA = valor;
-                Serial.print(F(" Failsafe=")); Serial.print(LIMITE_QUEDA, 0); Serial.println(F(" deg"));
-            } else Serial.println(F("ERR: C [10..90]"));
-            break;
         case 'R':
             if (valor >= 1.0f && valor <= 200.0f) {
                 RAMP_DEGS = valor;
                 Serial.print(F(" Rampa=")); Serial.print(RAMP_DEGS, 1); Serial.println(F(" deg/s"));
             } else Serial.println(F("ERR: R [1..200]"));
             break;
-        case 'Z':
-            if (valor >= 0.0f && valor <= 40.0f) {
-                DITHER_AMP = valor;
-                Serial.print(F(" Dither=")); Serial.print(DITHER_AMP, 1);
-                Serial.print(F(" PWM (")); Serial.print(250.0f / (2.0f * DITHER_DIV), 1); Serial.println(F(" Hz)"));
-            } else Serial.println(F("ERR: Z [0..40]"));
-            break;
-        case 'U':
-            if (valor >= 1.0f && valor <= 30.0f) {
-                DITHER_DIV = (uint8_t)valor;
-                Serial.print(F(" Dither freq=")); Serial.print(250.0f / (2.0f * DITHER_DIV), 1); Serial.println(F(" Hz"));
-            } else Serial.println(F("ERR: U [1..30]"));
-            break;
+
         case 'M':
             if (valor >= 0.0f && valor <= 6.0f) {
                 MPU_DLPF = (uint8_t)valor;
@@ -540,7 +498,7 @@ void resetarI2C() {
             Serial.print(F(" Liga=")); Serial.println(sistema_ligado ? F("SIM") : F("NAO"));
             break;
         default:
-            Serial.println(F("ERR: A/N/Q/P/I/D/E/H/F/K/B/V/C/R/Z/U/M/L/S/T<val>/?"));
+            Serial.println(F("ERR: A/N/P/I/D/F/B/V/M/L/S/T<val>/?"));
             break;
     }
 }
