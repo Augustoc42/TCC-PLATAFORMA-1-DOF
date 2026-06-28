@@ -15,15 +15,12 @@ const float   GYRO_LSB_PER_DPS = 131.0f;
 const float   ACC_LSB_PER_G    = 16384.0f; 
 uint8_t MPU_DLPF = 3;
 const uint32_t LOOP_US = 4000UL;
-
 //DIVISOR DA MALHA EXTERNA 50 e 250
 const uint8_t OUTER_DIV = 5;
-
 //VELOCIDADE BASE DOS MOTORES
 int VEL_BASE = 1350;   
 const int VEL_MIN = 1100;
 const int VEL_MAX = 1900;
-
 // CONTROLADOR EM CASCATA
 // MALHA EXTERNA
 float Kp_ang   = 2.00f;    
@@ -33,18 +30,14 @@ float rate_setpoint = 0.0f;
 float MAX_RATE_SP = 120.0f; /
 const float I_LIMIT_ANG = 700.0f;   
 const float I_DECAY_ANG = 0.9975f;
-
 // MALHA INTERNA
 float Kp_rate   = 0.70f;    
 float Ki_rate   = 0.0f;
 float Kd_rate   = 0.0f;  
 float soma_rate = 0.0f;
-
-
 const float I_LIMIT_RATE = 300.0f;
 const float FREEZE_RATE  = 0.5f;    
-
-//ANTI-WINDUP
+//ANTI-WINDU
 const float I_LIMIT  = I_LIMIT_ANG;
 const float D_LIMIT  = 150.0f;
 const float KAW_BACK = 0.2f;
@@ -55,7 +48,6 @@ const float FREEZE_ANG = 0.3f;
 const float I_BAND_DEG = 12.0f;     
 float DEAD_ANG  = 0.4f;   
 float DEAD_RATE = 1.0f; 
-
 float STICTION_KICK = 15.0f;
 const float STICTION_GYRO_THRESH = 15.0f;
 const float STICTION_ERR_THRESH  = 3.0f; 
@@ -65,27 +57,23 @@ int   balanceamento = -24;
 bool  sistema_ligado = false;
 float LIMITE_QUEDA = 45.0f;
 const uint16_t FALL_TRIP    = 50;
-
 //GATING DO ACELEROMETRO NO KALMAN 
 const float R_MEASURE_BASE = 0.05f;
 const float ACC_GATE_TOL   = 0.10f;
 const float ACC_GATE_GAIN  = 8.0f;
 const float R_MEASURE_MAX  = 5.0f;
-
 //SETPOINT COM RAMPA 
 float RAMP_DEGS  = 15.0f;   
 float setpoint_target  = -30.0f;
 float setpoint_ativo   = -30.0f;
 const float PID_LIMIT      = 350.0f;   /
 const float GYRO_SAT_DEG_S = 240.0f;
-
 //VARIAVEIS
 Servo    m1, m2;
 int16_t  accX, accY, accZ, gyroX;
 float    gyroX_cal = 0.0f;
 uint32_t timer_loop;
 uint32_t timer_print;
-
 // FILTRO PT1
 struct PT1Filter {
     float state = 0.0f;
@@ -97,12 +85,10 @@ struct PT1Filter {
     }
     void reset(float v = 0.0f) { state = v; }
 };
-
 // Corte do PT2
 float PT2_DTERM_HZ = 20.0f;
 PT1Filter   pt2a, pt2b;
 float       prev_gyroRate_D = 0.0f; 
-
 // FILTRO DE KALMAN
 struct Kalman {
     float Q_angle   = 0.001f;
@@ -113,7 +99,6 @@ struct Kalman {
     float P[2][2]   = {{10.0f, 0.0f}, {0.0f, 0.1f}};
 };
 Kalman kX;
-
 const uint8_t I2C_MAX_FALHAS = 10;
 void loop() {
     wdt_reset();
@@ -141,7 +126,6 @@ void loop() {
             i2c_falhas = 0;
         }
     }
-
     //  DETECCAO DE GIRO CONGELADO
     {
         const uint8_t GYRO_STUCK_TRIP = 20;    
@@ -168,18 +152,14 @@ void loop() {
     }
 float gyroRate    = ((float)gyroX - gyroX_cal) / GYRO_LSB_PER_DPS;
 float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ * accZ)) * 180.0f / PI;
-
     // gating do acelerometro inflando R_measure fora de 1 g
     float acc_mag    = sqrtf((float)accX * accX + (float)accY * accY + (float)accZ * accZ);
     float acc_desvio = fabsf(acc_mag - ACC_LSB_PER_G) / ACC_LSB_PER_G;
     float r_extra    = acc_desvio - ACC_GATE_TOL;
-    kX.R_measure     = (r_extra <= 0.0f)
-                         ? R_MEASURE_BASE : constrain(R_MEASURE_BASE * (1.0f + ACC_GATE_GAIN * r_extra), R_MEASURE_BASE, R_MEASURE_MAX);
-
+    kX.R_measure     = (r_extra <= 0.0f) ? R_MEASURE_BASE : constrain(R_MEASURE_BASE * (1.0f + ACC_GATE_GAIN * r_extra), R_MEASURE_BASE, R_MEASURE_MAX);
     float angulo_real = calcularKalman(accAngle, gyroRate, dt);
     float gyroRate_D1 = pt2a.update(gyroRate, dt, PT2_DTERM_HZ);
     float gyroRate_D  = pt2b.update(gyroRate_D1, dt, PT2_DTERM_HZ); 
-
     // rampa do setpoint
     if (sistema_ligado) {
         float delta_max = RAMP_DEGS * dt;
@@ -188,10 +168,8 @@ float accAngle    = atan2f((float)accY, sqrtf((float)accX * accX + (float)accZ *
         else if (diff < -delta_max) setpoint_ativo -= delta_max;
         else                        setpoint_ativo  = setpoint_target;
     }
-
     bool saturado = false;
     int  cmd_pwm1 = 1000, cmd_pwm2 = 1000;
-
     if (sistema_ligado) {
         // calculado todo ciclo
         float erro_ang = setpoint_ativo - angulo_real;   
@@ -354,16 +332,13 @@ float calcularKalman(float newAngle, float newRate, float dt) {
     kX.P[0][1] -= dt * kX.P[1][1];
     kX.P[1][0] -= dt * kX.P[1][1];
     kX.P[1][1] += kX.Q_bias * dt;
-
     float S  = kX.P[0][0] + kX.R_measure;
     float K0 = kX.P[0][0] / S;
     float K1 = kX.P[1][0] / S;
-
     float y   = newAngle - kX.angle;
     kX.angle += K0 * y;
     kX.bias  += K1 * y;
     kX.bias   = constrain(kX.bias, -10.0f, 10.0f);
-
     float P00 = kX.P[0][0], P01 = kX.P[0][1];
     kX.P[0][0] -= K0 * P00;
     kX.P[0][1] -= K0 * P01;
