@@ -62,7 +62,6 @@ const float R_MEASURE_BASE = 0.05f;
 const float ACC_GATE_TOL   = 0.10f;
 const float ACC_GATE_GAIN  = 8.0f;
 const float R_MEASURE_MAX  = 5.0f;
-//SETPOINT COM RAMPA 
 float RAMP_DEGS  = 15.0f;   
 float setpoint_target  = -30.0f;
 float setpoint_ativo   = -30.0f;
