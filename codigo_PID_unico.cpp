@@ -45,11 +45,6 @@ const float R_MEASURE_BASE = 0.05f;
 const float ACC_GATE_TOL   = 0.10f;   
 const float ACC_GATE_GAIN  = 8.0f;    
 const float R_MEASURE_MAX  = 5.0f;   
-//SETPOINT COM RAMPA 
-float RAMP_DEGS  = 15.0f; 
-float setpoint_target  = -30.0f;
-float SP_WEIGHT_B = 1.0f; 
-const float SP_LPF_HZ   = 0.5f; 
 //VARIÁVEIS
 Servo    m1, m2;
 int16_t  accX, accY, accZ, gyroX;
